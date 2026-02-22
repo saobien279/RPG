@@ -4,6 +4,7 @@ local ProfileStore = require(script.Parent.modules.ProfileStore)
 local DataTemplate = require(ReplicatedStorage.Shared.DataTemplate)
 local RollService = require(script.Parent.RollService)
 local StatService = require(script.Parent.StatService)
+local UpdateStatsEvent = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Events"):WaitForChild("UpdateStats")
 
 -- Sử dụng V3 để reset dữ liệu cho việc kiểm tra
 local PlayerStore = ProfileStore.New("PlayerData_V3", DataTemplate)

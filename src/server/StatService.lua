@@ -5,7 +5,6 @@ local OriginData = require(ReplicatedStorage.Shared.OriginData)
 
 local StatService = {}
 
--- Hàm lấy bảng chỉ số cộng thêm
 local function GetStatsModifier(name, dataTable)
     for _, tierInfo in pairs(dataTable) do
         if tierInfo.Stats and tierInfo.Stats[name] then
@@ -16,20 +15,21 @@ local function GetStatsModifier(name, dataTable)
 end
 
 function StatService.CalculateFinalStats(profileData)
-    local base = profileData.Slot1.Stats -- Currently 0
+    local base = profileData.Slot1.Stats -- Giá trị khởi đầu là 0
     local raceName = profileData.Slot1.Race
     local originName = profileData.Slot1.Origin
 
     local raceMod = GetStatsModifier(raceName, RaceData)
     local originMod = GetStatsModifier(originName, OriginData)
 
-    -- Logic: Cộng Race trước, sau đó nhân % của Origin
+    -- Logic: (Base + Race) * (1 + %Origin)
     local function calculate(baseVal, raceFlat, originPercent)
-        local afterRace = baseVal + (raceFlat or 0)
+        local totalAfterRace = baseVal + (raceFlat or 0)
+        -- Sử dụng % từ Origin (hoặc All nếu là Quý Tộc)
         local multiplier = 1 + ((originPercent or originMod.All or 0) / 100)
         
-        -- Dùng math.ceil (làm tròn lên) để đảm bảo buff % luôn có tác dụng (ít nhất +1)
-        return math.ceil(afterRace * multiplier)
+        -- Làm tròn lên để buff % nhỏ nhất (+8%) vẫn có giá trị ít nhất là 1 điểm
+        return math.ceil(totalAfterRace * multiplier)
     end
 
     return {
