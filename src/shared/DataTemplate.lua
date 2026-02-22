@@ -5,10 +5,10 @@ local DataTemplate = {
         Race = "None", -- Sẽ Roll sau [cite: 3]
         Origin = "None", -- Sẽ Roll sau [cite: 3]
         Stats = {
-            Str = 10, -- Sức mạnh vật lý 
-            Arc = 10, -- Sát thương phép 
-            End = 10, -- Tăng máu 
-            Dex = 10  -- Chí mạng 
+            Str = 0, -- Sức mạnh vật lý 
+            Arc = 0, -- Sát thương phép 
+            End = 0, -- Tăng máu 
+            Dex = 0  -- Chí mạng 
         },
         Inventory = {},
     },

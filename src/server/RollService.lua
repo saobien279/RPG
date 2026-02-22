@@ -4,12 +4,14 @@ local OriginData = require(ReplicatedStorage.Shared.OriginData)
 
 local RollService = {}
 
--- Function to roll for a random Race
+-- Hàm thực hiện quay số chọn Tộc (Race)
 function RollService.RollRace()
+    -- Tạo số ngẫu nhiên từ 0.1 đến 100
     local roll = math.random(1, 1000) / 10
     
+    -- Kiểm tra tỷ lệ dựa trên dữ liệu từ RaceData
     if roll <= 0.5 then 
-        return "Dragonkin"
+        return "Dragonkin" -- Legendary
     elseif roll <= (0.5 + 5) then 
         local list = RaceData.Epic.Races
         return list[math.random(1, #list)]
@@ -25,13 +27,13 @@ function RollService.RollRace()
     end
 end
 
--- Function to roll for a random Origin
+-- Hàm thực hiện quay số chọn Xuất thân (Origin)
 function RollService.RollOrigin()
-    -- Each call to math.random() creates a unique number, 
-    -- so Race and Origin results will naturally be different.
+    -- Mỗi lần gọi math.random() sẽ tạo ra một con số khác nhau
     local roll = math.random(1, 1000) / 10
     
-    if roll <= 0.5 then -- Adjusted to 0.5% for Fallen Lord based on your OriginData
+    -- Kiểm tra tỷ lệ dựa trên dữ liệu từ OriginData
+    if roll <= 0.5 then 
         local list = OriginData.Legendary.Origins
         return list[math.random(1, #list)]
     elseif roll <= (0.5 + 5) then
