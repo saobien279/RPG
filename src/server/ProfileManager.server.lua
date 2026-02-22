@@ -5,7 +5,7 @@ local ProfileStore = require(script.Parent.modules.ProfileStore)
 local DataTemplate = require(ReplicatedStorage.Shared.DataTemplate)
 local RollService = require(script.Parent.RollService) -- Make sure the file name matches
 
-local PlayerStore = ProfileStore.New("PlayerData_V2", DataTemplate)
+local PlayerStore = ProfileStore.New("PlayerData_V3", DataTemplate)
 local Profiles = {}
 
 local function OnPlayerAdded(player)
@@ -22,16 +22,15 @@ local function OnPlayerAdded(player)
         if player:IsDescendantOf(Players) then
             Profiles[player] = profile
             
-            -- CHECK RACE
+            -- Inside ProfileManager when checking for new players:
             if profile.Data.Slot1.Race == "None" then
                 profile.Data.Slot1.Race = RollService.RollRace()
-                print("🎉 " .. player.Name .. " rolled Race: " .. profile.Data.Slot1.Race)
+                print("Race Rolled: " .. profile.Data.Slot1.Race)
             end
 
-            -- CHECK ORIGIN
             if profile.Data.Slot1.Origin == "None" then
                 profile.Data.Slot1.Origin = RollService.RollOrigin()
-                print("📜 " .. player.Name .. " rolled Origin: " .. profile.Data.Slot1.Origin)
+                print("Origin Rolled: " .. profile.Data.Slot1.Origin)
             end
             
             print("✅ Data loaded successfully for " .. player.Name)
