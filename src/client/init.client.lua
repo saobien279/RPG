@@ -4,7 +4,7 @@ local UpdateStatsEvent = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("
 
 UpdateStatsEvent.OnClientEvent:Connect(function(data)
     print("✨ Đã nhận dữ liệu từ Server!")
-    print("Tộc: " .. data.Race)
-    print("Xuất thân: " .. data.Origin)
+    print("Race: " .. data.Race)
+    print("Origin: " .. data.Origin)
     -- Sau này mình sẽ dán data.Stats vào UI ở đây
 end)

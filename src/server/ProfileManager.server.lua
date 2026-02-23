@@ -51,6 +51,12 @@ local function OnPlayerAdded(player)
             print("-----------------------------------")
             
             print("✅ Data loaded successfully for " .. player.Name)
+            -- THÊM DÒNG NÀY ĐỂ GỬI DỮ LIỆU VỀ UI
+            UpdateStatsEvent:FireClient(player, {
+                Race = profile.Data.Slot1.Race,
+                Origin = profile.Data.Slot1.Origin,
+                Stats = finalStats
+            })
         else
             profile:EndSession() -- Giải phóng dữ liệu nếu người chơi thoát nhanh
         end
