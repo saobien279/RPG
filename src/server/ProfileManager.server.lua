@@ -5,6 +5,7 @@ local DataTemplate = require(ReplicatedStorage.Shared.DataTemplate)
 local RollService = require(script.Parent.RollService)
 local StatService = require(script.Parent.StatService)
 local UpdateStatsEvent = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Events"):WaitForChild("UpdateStats")
+local RequestRollEvent = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Events"):WaitForChild("RequestRoll")
 
 -- Sử dụng V3 để reset dữ liệu cho việc kiểm tra
 local PlayerStore = ProfileStore.New("PlayerData_V3", DataTemplate)
@@ -64,6 +65,25 @@ local function OnPlayerAdded(player)
         player:Kick("System Error: Failed to load data.")
     end
 end
+
+RequestRollEvent.OnServerEvent:Connect(function(player, rollType)
+    local profile = Profiles[player]
+    if not profile then return end
+    
+    if rollType == "Race" then
+        profile.Data.Slot1.Race = RollService.RollRace()
+    elseif rollType == "Origin" then
+        profile.Data.Slot1.Origin = RollService.RollOrigin()
+    end
+    
+    -- Tính toán lại stats và gửi về cho Client cập nhật UI
+    local finalStats = StatService.CalculateFinalStats(profile.Data)
+    UpdateStatsEvent:FireClient(player, {
+        Race = profile.Data.Slot1.Race,
+        Origin = profile.Data.Slot1.Origin,
+        Stats = finalStats
+    })
+end)
 
 Players.PlayerAdded:Connect(OnPlayerAdded)
 Players.PlayerRemoving:Connect(function(player)
