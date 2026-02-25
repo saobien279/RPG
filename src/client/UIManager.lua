@@ -1,0 +1,246 @@
+local UIManager = {}
+
+function UIManager.BuildMainUI(playerGui)
+    -- 1. SETUP SCREEN GUI
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "RPG_UI"
+    screenGui.IgnoreGuiInset = true
+    screenGui.Parent = playerGui
+
+    -- 2. NỀN
+    local background = Instance.new("ImageLabel")
+    background.Image = "rbxassetid://130329682866275" 
+    background.Size = UDim2.fromScale(1, 1)
+    background.BackgroundTransparency = 1
+    background.ScaleType = Enum.ScaleType.Stretch
+    background.Parent = screenGui
+
+    -- 3. HEADER
+    local header = Instance.new("Frame")
+    header.Size = UDim2.new(1, 0, 0.08, 0)
+    header.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    header.Parent = background
+
+    local headerLayout = Instance.new("UIListLayout")
+    headerLayout.FillDirection = Enum.FillDirection.Horizontal
+    headerLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    headerLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    headerLayout.Padding = UDim.new(0.01, 0)
+    headerLayout.Parent = header
+
+    local function createHeaderBtn(name)
+        local btn = Instance.new("TextButton")
+        btn.Text = name:upper()
+        btn.Size = UDim2.new(0.12, 0, 0.7, 0)
+        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.Font = Enum.Font.Antique
+        btn.TextScaled = true
+        btn.Parent = header
+    end
+    for _, n in {"Main", "Arena", "Dungeon", "Inventory"} do createHeaderBtn(n) end
+
+    -- 4. VÙNG NỘI DUNG CHÍNH
+    local mainContent = Instance.new("Frame")
+    mainContent.Position = UDim2.fromScale(0.5, 0.54)
+    mainContent.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainContent.Size = UDim2.fromScale(0.9, 0.85)
+    mainContent.BackgroundTransparency = 1
+    mainContent.Parent = background
+
+    local contentLayout = Instance.new("UIListLayout")
+    contentLayout.FillDirection = Enum.FillDirection.Horizontal
+    contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    contentLayout.Padding = UDim.new(0.02, 0)
+    contentLayout.Parent = mainContent  
+
+    local function createColumn(width)
+        local col = Instance.new("Frame")
+        col.Size = UDim2.new(width, -20, 1, 0)
+        col.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+        col.BackgroundTransparency = 0.5
+        col.Parent = mainContent
+        return col
+    end
+
+    local statsCol = createColumn(0.3)
+    local raceCol = createColumn(0.3)
+    local rollCol = createColumn(0.35)
+
+    -- [CỘT STATS]
+    local statsContainer = Instance.new("Frame")
+    statsContainer.Size = UDim2.fromScale(0.9, 0.9)
+    statsContainer.Position = UDim2.fromScale(0.05, 0.05)
+    statsContainer.BackgroundTransparency = 1
+    statsContainer.Parent = statsCol
+
+    local statsLayout = Instance.new("UIListLayout")
+    statsLayout.Padding = UDim.new(0.05, 0)
+    statsLayout.Parent = statsContainer
+
+    local function createStat(name)
+        local lbl = Instance.new("TextLabel")
+        lbl.Text = name .. ": 0"
+        lbl.Size = UDim2.new(1, 0, 0.15, 0)
+        lbl.BackgroundTransparency = 1
+        lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+        lbl.Font = Enum.Font.Antique
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.TextScaled = true
+        lbl.Parent = statsContainer
+        return lbl
+    end
+
+    local function createTitle(name)
+        local lbl = Instance.new("TextLabel")
+        lbl.Text = name 
+        lbl.Size = UDim2.new(1, 0, 0.20, 0)
+        lbl.BackgroundTransparency = 1
+        lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+        lbl.Font = Enum.Font.Antique
+        lbl.TextXAlignment = Enum.TextXAlignment.Center
+        lbl.TextScaled = true
+        lbl.Parent = statsContainer
+        return lbl
+    end
+
+    createTitle("Character Stats")
+    local sStr = createStat("Strength")
+    local sDex = createStat("Dexterity")
+    local sEnd = createStat("Endurance")
+    local sArc = createStat("Arcane")
+
+    -- [CỘT RACE]
+    local modelImg = Instance.new("ImageLabel")
+    modelImg.Size = UDim2.fromScale(0.9, 0.45)
+    modelImg.Position = UDim2.fromScale(0.05, 0.05)
+    modelImg.BackgroundTransparency = 1
+    modelImg.ScaleType = Enum.ScaleType.Fit 
+    modelImg.Parent = raceCol
+
+    local infoBox = Instance.new("Frame")
+    infoBox.Size = UDim2.fromScale(0.9, 0.45)
+    infoBox.Position = UDim2.fromScale(0.05, 0.55)
+    infoBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    infoBox.Parent = raceCol
+
+    local infoLayout = Instance.new("UIListLayout")
+    infoLayout.FillDirection = Enum.FillDirection.Vertical
+    infoLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    infoLayout.Padding = UDim.new(0.05, 0)
+    infoLayout.Parent = infoBox
+
+    --Check Padding sau
+    local infoPadding = Instance.new("UIPadding")
+    infoPadding.PaddingTop = UDim.new(0.05, 0)
+    infoPadding.Parent = infoBox
+
+    local function createInfoText(color)
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(0.95, 0, 0.28, 0)
+        lbl.TextColor3 = color
+        lbl.BackgroundTransparency = 1
+        lbl.TextScaled = true
+        lbl.TextWrapped = true
+        lbl.Parent = infoBox
+        return lbl
+    end
+
+    local bText = createInfoText(Color3.fromRGB(200, 200, 200))
+    local kText = createInfoText(Color3.fromRGB(150, 255, 150))
+    local oText = createInfoText(Color3.fromRGB(200, 200, 200))
+
+    -- [CỘT ROLL]
+    local function rollGrp(name, y)
+        local box = Instance.new("TextLabel")
+        box.Text = "None"
+        box.Size = UDim2.fromScale(0.7, 0.12)
+        box.Position = UDim2.fromScale(0.15, y)
+        box.BackgroundColor3 = Color3.fromRGB(60, 40, 40)
+        box.TextColor3 = Color3.fromRGB(255, 255, 255)
+        box.TextScaled = true
+        box.Parent = rollCol
+        
+        local btn = Instance.new("TextButton")
+        btn.Text = "ROLL"
+        btn.Size = UDim2.fromScale(0.4, 0.1)
+        btn.Position = UDim2.fromScale(0.3, y + 0.15)
+        btn.BackgroundColor3 = Color3.fromRGB(80, 50, 50)
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.TextScaled = true
+        btn.Parent = rollCol
+        return box, btn
+    end
+
+    local rBox, rBtn = rollGrp("Race", 0.1)
+    local oBox, oBtn = rollGrp("Origin", 0.55)
+
+    -- =====================================
+    -- 5. BẢNG CẢNH BÁO (CONFIRM DIALOG)
+    -- =====================================
+    local confirmBg = Instance.new("Frame")
+    confirmBg.Size = UDim2.fromScale(1, 1)
+    confirmBg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    confirmBg.BackgroundTransparency = 0.5 -- Phủ nền đen mờ
+    confirmBg.ZIndex = 10 -- Ép nó nổi lên trên tất cả mọi thứ
+    confirmBg.Visible = false -- Mặc định tàng hình
+    confirmBg.Parent = screenGui
+
+    local confirmBox = Instance.new("Frame")
+    confirmBox.Size = UDim2.fromScale(0.35, 0.25)
+    confirmBox.Position = UDim2.fromScale(0.5, 0.5)
+    confirmBox.AnchorPoint = Vector2.new(0.5, 0.5)
+    confirmBox.BackgroundColor3 = Color3.fromRGB(40, 30, 30)
+    confirmBox.ZIndex = 11
+    confirmBox.Parent = confirmBg
+
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0.1, 0)
+    uiCorner.Parent = confirmBox
+
+    local confirmText = Instance.new("TextLabel")
+    confirmText.Size = UDim2.fromScale(0.9, 0.5)
+    confirmText.Position = UDim2.fromScale(0.05, 0.1)
+    confirmText.BackgroundTransparency = 1
+    confirmText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    confirmText.Font = Enum.Font.Antique
+    confirmText.TextScaled = true
+    confirmText.TextWrapped = true
+    confirmText.ZIndex = 12
+    confirmText.Parent = confirmBox
+
+    local btnYes = Instance.new("TextButton")
+    btnYes.Text = "YES"
+    btnYes.Size = UDim2.fromScale(0.4, 0.2)
+    btnYes.Position = UDim2.fromScale(0.07, 0.7)
+    btnYes.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+    btnYes.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btnYes.Font = Enum.Font.Antique
+    btnYes.TextScaled = true
+    btnYes.ZIndex = 12
+    btnYes.Parent = confirmBox
+
+    local btnNo = Instance.new("TextButton")
+    btnNo.Text = "NO"
+    btnNo.Size = UDim2.fromScale(0.4, 0.2)
+    btnNo.Position = UDim2.fromScale(0.53, 0.7)
+    btnNo.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    btnNo.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btnNo.Font = Enum.Font.Antique
+    btnNo.TextScaled = true
+    btnNo.ZIndex = 12
+    btnNo.Parent = confirmBox
+
+     -- 6. TRẢ VỀ CÁC PHẦN TỬ CẦN THIẾT CHO LOGIC
+     -- Trả về các phần tử liên quan đến Stats
+    -- Trả về tất cả các phần tử cần tương tác
+    return {
+        Stats = { Str = sStr, Dex = sDex, End = sEnd, Arc = sArc },
+        Labels = { RaceBox = rBox, OriginBox = oBox, Buff = bText, Skill = kText, Origin = oText },
+        ModelImage = modelImg,
+        Buttons = { RaceRoll = rBtn, OriginRoll = oBtn },
+        Dialog = { Background = confirmBg, Message = confirmText, Yes = btnYes, No = btnNo }
+    }
+end
+
+return UIManager
