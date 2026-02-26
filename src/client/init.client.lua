@@ -97,3 +97,36 @@ UI.Dialog.No.MouseButton1Click:Connect(function()
     pendingRoll = nil -- Hủy lệnh Roll
     UI.Dialog.Background.Visible = false -- Tắt bảng đi
 end)
+
+
+-- XỬ LÝ CHUYỂN TAB
+local function switchTab(targetTabName)
+    -- 1. Vòng lặp tắt hết tất cả các Tab và cho các nút tối màu lại
+    for tabName, btn in pairs(UI.HeaderBtns) do
+        UI.Tabs[tabName].Visible = false
+        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45) -- Màu nút đang tắt
+    end
+    
+    -- 2. Chỉ bật cái Tab được chọn lên và làm sáng màu nút đó
+    if UI.Tabs[targetTabName] and UI.HeaderBtns[targetTabName] then
+        UI.Tabs[targetTabName].Visible = true
+        UI.HeaderBtns[targetTabName].BackgroundColor3 = Color3.fromRGB(80, 80, 80) -- Sáng lên báo hiệu đang ở Tab này
+    end
+end
+
+-- 3. Gắn cảm biến click cho 4 cái nút Header
+for tabName, btn in pairs(UI.HeaderBtns) do
+    btn.MouseButton1Click:Connect(function()
+        switchTab(tabName)
+    end)
+end
+
+-- 4. Khi vừa vào game, tự động mở Tab "Main"
+switchTab("Main")
+
+for areaName, btn in pairs(UI.AreaBtns) do
+    btn.MouseButton1Click:Connect(function()
+        -- Khi bấm vào thẻ "Dungeon", gọi hàm switchTab để chuyển qua Tab Dungeon
+        switchTab(areaName)
+    end)
+end

@@ -15,7 +15,9 @@ function UIManager.BuildMainUI(playerGui)
     background.ScaleType = Enum.ScaleType.Stretch
     background.Parent = screenGui
 
-    -- 3. HEADER
+   -- =====================================
+    -- 3. HEADER (Giảm xuống 3 nút)
+    -- =====================================
     local header = Instance.new("Frame")
     header.Size = UDim2.new(1, 0, 0.08, 0)
     header.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
@@ -28,44 +30,124 @@ function UIManager.BuildMainUI(playerGui)
     headerLayout.Padding = UDim.new(0.01, 0)
     headerLayout.Parent = header
 
+    local headerBtns = {}
+
     local function createHeaderBtn(name)
         local btn = Instance.new("TextButton")
         btn.Text = name:upper()
-        btn.Size = UDim2.new(0.12, 0, 0.7, 0)
+        btn.Size = UDim2.new(0.15, 0, 0.7, 0) -- Cho nút to ra một chút vì giờ chỉ có 3 nút
         btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.Font = Enum.Font.Antique
         btn.TextScaled = true
         btn.Parent = header
+        headerBtns[name] = btn
     end
-    for _, n in {"Main", "Arena", "Dungeon", "Inventory"} do createHeaderBtn(n) end
+    -- CHỈ TẠO 3 NÚT: MAIN, AREA, INVENTORY
+    for _, n in {"Main", "Area", "Inventory"} do createHeaderBtn(n) end
 
-    -- 4. VÙNG NỘI DUNG CHÍNH
-    local mainContent = Instance.new("Frame")
-    mainContent.Position = UDim2.fromScale(0.5, 0.54)
-    mainContent.AnchorPoint = Vector2.new(0.5, 0.5)
-    mainContent.Size = UDim2.fromScale(0.9, 0.85)
-    mainContent.BackgroundTransparency = 1
-    mainContent.Parent = background
+    -- =====================================
+    -- 4. HỆ THỐNG TAB
+    -- =====================================
+    local tabContainer = Instance.new("Frame")
+    tabContainer.Position = UDim2.fromScale(0.5, 0.54)
+    tabContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+    tabContainer.Size = UDim2.fromScale(0.9, 0.85)
+    tabContainer.BackgroundTransparency = 1
+    tabContainer.Parent = background
 
-    local contentLayout = Instance.new("UIListLayout")
-    contentLayout.FillDirection = Enum.FillDirection.Horizontal
-    contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    contentLayout.Padding = UDim.new(0.02, 0)
-    contentLayout.Parent = mainContent  
+    local tabs = {}
+
+    local function createTab(name)
+        local tab = Instance.new("Frame")
+        tab.Name = name .. "Tab"
+        tab.Size = UDim2.fromScale(1, 1)
+        tab.BackgroundTransparency = 1
+        tab.Visible = false
+        tab.Parent = tabContainer
+        tabs[name] = tab
+        return tab
+    end
+
+    -- ĐÚC CÁC TAB CHÍNH VÀ TAB PHỤ
+    local mainTab = createTab("Main")
+    local areaTab = createTab("Area")
+    local inventoryTab = createTab("Inventory")
+    
+    -- Các Tab phụ nằm bên trong Area
+    local dungeonTab = createTab("Dungeon")
+    local smithTab = createTab("Smith")
+    local merchantTab = createTab("Merchant")
+
+    -- Thêm chữ chờ thi công cho Inventory và các tab phụ
+    for _, tabName in {"Inventory", "Dungeon", "Smith", "Merchant"} do
+        local txt = Instance.new("TextLabel")
+        txt.Text = tabName:upper() .. " IS UNDER CONSTRUCTION"
+        txt.Size = UDim2.fromScale(1, 1)
+        txt.TextColor3 = Color3.fromRGB(200, 200, 200)
+        txt.BackgroundTransparency = 1
+        txt.Font = Enum.Font.Antique
+        txt.TextScaled = true
+        txt.Parent = tabs[tabName]
+    end
+
+    mainTab.Visible = true
+
+    -- =====================================
+    -- 4.1 THIẾT KẾ TAB MAIN (Giữ nguyên đồ cũ)
+    -- =====================================
+    local mainLayout = Instance.new("UIListLayout")
+    mainLayout.FillDirection = Enum.FillDirection.Horizontal
+    mainLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    mainLayout.Padding = UDim.new(0.02, 0)
+    mainLayout.Parent = mainTab  
 
     local function createColumn(width)
         local col = Instance.new("Frame")
         col.Size = UDim2.new(width, -20, 1, 0)
         col.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
         col.BackgroundTransparency = 0.5
-        col.Parent = mainContent
+        col.Parent = mainTab
         return col
     end
 
     local statsCol = createColumn(0.3)
     local raceCol = createColumn(0.3)
     local rollCol = createColumn(0.35)
+
+    -- =====================================
+    -- 4.2 THIẾT KẾ TAB AREA (3 Thẻ to bằng nhau)
+    -- =====================================
+    local areaLayout = Instance.new("UIListLayout")
+    areaLayout.FillDirection = Enum.FillDirection.Horizontal
+    areaLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    areaLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    areaLayout.Padding = UDim.new(0.03, 0)
+    areaLayout.Parent = areaTab
+
+    local areaBtns = {}
+
+    local function createAreaCard(name, color)
+        local cardBtn = Instance.new("TextButton")
+        cardBtn.Name = name .. "Card"
+        cardBtn.Size = UDim2.new(0.31, 0, 0.9, 0) -- Chiếm 31% chiều ngang, 90% chiều cao
+        cardBtn.BackgroundColor3 = color
+        cardBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        cardBtn.Font = Enum.Font.Antique
+        cardBtn.TextScaled = true
+        cardBtn.Text = name:upper()
+        cardBtn.Parent = areaTab
+
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0.05, 0) -- Bo tròn góc cho thẻ
+        corner.Parent = cardBtn
+
+        areaBtns[name] = cardBtn
+    end
+
+    createAreaCard("Dungeon", Color3.fromRGB(80, 40, 40))
+    createAreaCard("Smith", Color3.fromRGB(60, 60, 60))
+    createAreaCard("Merchant", Color3.fromRGB(40, 80, 40))
 
     -- [CỘT STATS]
     local statsContainer = Instance.new("Frame")
@@ -235,6 +317,9 @@ function UIManager.BuildMainUI(playerGui)
      -- Trả về các phần tử liên quan đến Stats
     -- Trả về tất cả các phần tử cần tương tác
     return {
+        HeaderBtns = headerBtns, -- Phải có dòng này
+        Tabs = tabs,             -- Phải có dòng này
+        AreaBtns = areaBtns,    
         Stats = { Str = sStr, Dex = sDex, End = sEnd, Arc = sArc },
         Labels = { RaceBox = rBox, OriginBox = oBox, Buff = bText, Skill = kText, Origin = oText },
         ModelImage = modelImg,
