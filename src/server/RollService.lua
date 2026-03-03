@@ -1,50 +1,47 @@
--- src/server/RollService.lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RaceData = require(ReplicatedStorage.Shared.RaceData)
-local OriginData = require(ReplicatedStorage.Shared.OriginData)
-
 local RollService = {}
 
-function RollService.RollRace()
-    local roll = math.random(1, 1000) / 10
-    
-    if roll <= 0.5 then -- Legend
-        return "Dragonkin"
-    elseif roll <= (0.5 + 5) then -- Epic
-        local list = RaceData.Epic.Races
-        return list[math.random(1, #list)]
-    elseif roll <= (0.5 + 5 + 10) then -- Rare
-        local list = RaceData.Rare.Races
-        return list[math.random(1, #list)]
-    elseif roll <= (0.5 + 5 + 10 + 30) then -- Uncommon
-        local list = RaceData.Uncommon.Races
-        return list[math.random(1, #list)]
-    else -- Common (54.5%)
-        local list = RaceData.Common.Races
-        return list[math.random(1, #list)]
+local RaceData = require(game.ReplicatedStorage.Shared.RaceData)
+local OriginData = require(game.ReplicatedStorage.Shared.OriginData)
+local UniqueSkillData = require(game.ReplicatedStorage.Shared.UniqueSkillData) -- Require file mới
+
+-- Hàm chung để random dựa trên bảng tỉ lệ (Code cũ giữ nguyên hoặc tối ưu)
+local function GetRarity(ratesTable)
+    local roll = math.random(1, 1000)
+    local current = 0
+    for _, info in ipairs(ratesTable) do
+        current = current + info.Chance
+        if roll <= current then
+            return info.Rarity
+        end
     end
+    return ratesTable[1].Rarity
+end
+
+local function GetItemByRarity(pool, rarity)
+    local candidates = {}
+    for name, info in pairs(pool) do
+        if info.Rarity == rarity then
+            table.insert(candidates, name)
+        end
+    end
+    if #candidates == 0 then return "None" end -- Fallback
+    return candidates[math.random(1, #candidates)]
+end
+
+function RollService.RollRace()
+    local rarity = GetRarity(RaceData.RATES)
+    return GetItemByRarity(RaceData.RACES, rarity)
 end
 
 function RollService.RollOrigin()
-    local roll = math.random(1, 1000) / 10
-    
-    -- Tỷ lệ Origin cũng nên tương đương để đảm bảo tính cân bằng
-    if roll <= 0.5 then 
-        local list = OriginData.Legendary.Origins
-        return list[math.random(1, #list)]
-    elseif roll <= (0.5 + 5) then
-        local list = OriginData.Epic.Origins
-        return list[math.random(1, #list)]
-    elseif roll <= (0.5 + 5 + 10) then
-        local list = OriginData.Rare.Origins
-        return list[math.random(1, #list)]
-    elseif roll <= (0.5 + 5 + 10 + 30) then
-        local list = OriginData.Uncommon.Origins
-        return list[math.random(1, #list)]
-    else
-        local list = OriginData.Common.Origins
-        return list[math.random(1, #list)]
-    end
+    local rarity = GetRarity(OriginData.RATES)
+    return GetItemByRarity(OriginData.ORIGINS, rarity)
+end
+
+-- HÀM MỚI: Roll Unique Skill
+function RollService.RollUniqueSkill()
+    local rarity = GetRarity(UniqueSkillData.RATES)
+    return GetItemByRarity(UniqueSkillData.SKILLS, rarity)
 end
 
 return RollService

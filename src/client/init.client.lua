@@ -18,6 +18,7 @@ local RequestRollEvent = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("
 -- BIẾN GHI NHỚ ĐỘ HIẾM VÀ LOẠI ĐANG CHỜ ROLL
 local currentRaceRarity = "Common"
 local currentOriginRarity = "Common"
+local currentUniqueSkillRarity = "Common"
 local pendingRoll = nil 
 
 -- Logic khi nhận dữ liệu từ Server
@@ -59,7 +60,24 @@ UpdateStatsEvent.OnClientEvent:Connect(function(data)
         UI.Labels.Origin.Text = "Origin: None"
     end
 
+    -- 3. XỬ LÝ UNIQUE SKILL (Code Mới)
+    UI.Labels.UniqueSkillBox.Text = data.UniqueSkill or "None"
+    
+    local skillInfo = UIData.UNIQUE_SKILL_INFO[data.UniqueSkill]
+    if skillInfo then
+        currentUniqueSkillRarity = skillInfo.Rarity or "Common"
+        UI.Labels.UniqueSkillBox.TextColor3 = UIData.RARITY_COLORS[currentUniqueSkillRarity] or Color3.fromRGB(255, 255, 255)
+        
+        -- Hiển thị mô tả và Buff của Skill ngay bên dưới nút Roll
+        UI.Labels.UniqueSkillDesc.Text = skillInfo.Desc .. "\n(" .. skillInfo.Buff .. ")"
+    else
+        currentUniqueSkillRarity = "Common"
+        UI.Labels.UniqueSkillBox.TextColor3 = UIData.RARITY_COLORS["Common"]
+        UI.Labels.UniqueSkillDesc.Text = "No Skill"
+    end
+
     UI.ModelImage.Image = UIData.RACE_MODELS[data.Race] or UIData.RACE_MODELS["None"]
+
 end)
 
 -- HÀM KIỂM TRA ĐỘ HIẾM KHI BẤM NÚT ROLL
@@ -82,6 +100,10 @@ end)
 
 UI.Buttons.OriginRoll.MouseButton1Click:Connect(function() 
     handleRollRequest("Origin", currentOriginRarity)
+end)
+
+UI.Buttons.UniqueSkillRoll.MouseButton1Click:Connect(function() 
+    handleRollRequest("UniqueSkill", currentUniqueSkillRarity)
 end)
 
 -- NÚT XỬ LÝ CỦA BẢNG CẢNH BÁO
