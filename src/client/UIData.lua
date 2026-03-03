@@ -62,4 +62,35 @@ UIData.ORIGIN_INFO = {
     ["Ancient Blood"] = { Buff = "+30% HP, +15% Phys/Magic DMG", Passive = "Immortal: Survive fatal hit with 1 HP", Rarity = "Legendary" }
 }
 
+-- DANH SÁCH HIỂN THỊ CHO UNIQUE SKILL
+UIData.UNIQUE_SKILL_INFO = {
+    -- [COMMON]
+    ["Sticky Thread"] = { Rarity = "Common", Desc = "Create sticky threads.", Buff = "+5% Dex" },
+    ["Body Armor"] = { Rarity = "Common", Desc = "Magical armor.", Buff = "+8% Defense" },
+    ["Magic Sense"] = { Rarity = "Common", Desc = "Perceive magicules.", Buff = "+8% Arcane" },
+
+    -- [UNCOMMON] (Mới)
+    ["Black Lightning"] = { Rarity = "Uncommon", Desc = "Dark lightning.", Buff = "+12% Mag DMG" },
+    ["Shadow Motion"] = { Rarity = "Uncommon", Desc = "Move in shadows.", Buff = "+10% Dex" },
+    ["Herculean Strength"] = { Rarity = "Uncommon", Desc = "Physical strength.", Buff = "+15% Str" },
+    ["Water Blade"] = { Rarity = "Uncommon", Desc = "Water cutter.", Buff = "Armor Pen" },
+
+    -- [RARE]
+    ["Berserker"] = { Rarity = "Rare", Desc = "Power over reason.", Buff = "+25% Phys DMG" },
+    ["Survivor"] = { Rarity = "Rare", Desc = "Resilience.", Buff = "+20% Regen" },
+    ["Severer"] = { Rarity = "Rare", Desc = "Cut space.", Buff = "Ignore 15% Def" },
+
+    -- [EPIC]
+    ["Degenerate"] = { Rarity = "Epic", Desc = "Synthesis.", Buff = "+25% All Stats" },
+    ["Mathematician"] = { Rarity = "Epic", Desc = "Fast Calc.", Buff = "100% Hit Rate" },
+    ["Starved"] = { Rarity = "Epic", Desc = "Steal power.", Buff = "Heal on Kill" },
+
+    -- [LEGENDARY]
+    ["Predator"] = { Rarity = "Legendary", Desc = "Predation.", Buff = "Absorb Skills" },
+    ["Great Sage"] = { Rarity = "Legendary", Desc = "AI Assistant.", Buff = "Auto-Battle" },
+    ["Gluttony"] = { Rarity = "Legendary", Desc = "Ravenous hunger.", Buff = "AoE Absorb" },
+
+    -- [MẶC ĐỊNH]
+    ["None"] = { Rarity = "Common", Desc = "No Skill", Buff = "" }
+}
 return UIData

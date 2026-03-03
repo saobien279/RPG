@@ -254,8 +254,9 @@ function UIManager.BuildMainUI(playerGui)
         return box, btn
     end
 
-    local rBox, rBtn = rollGrp("Race", 0.1)
-    local oBox, oBtn = rollGrp("Origin", 0.55)
+    local rBox, rBtn = rollGrp("Race", 0.05)        -- Nằm ở trên cùng (5%)
+    local oBox, oBtn = rollGrp("Origin", 0.35)      -- Nằm ở giữa (35%)
+    local uBox, uBtn= rollGrp("UniqueSkill", 0.65) -- Nằm ở dưới (65%) <-- ĐÂY CHÍNH LÀ NÓ
 
     -- =====================================
     -- 5. BẢNG CẢNH BÁO (CONFIRM DIALOG)
@@ -321,9 +322,9 @@ function UIManager.BuildMainUI(playerGui)
         Tabs = tabs,             -- Phải có dòng này
         AreaBtns = areaBtns,    
         Stats = { Str = sStr, Dex = sDex, End = sEnd, Arc = sArc },
-        Labels = { RaceBox = rBox, OriginBox = oBox, Buff = bText, Skill = kText, Origin = oText },
+        Labels = { RaceBox = rBox, OriginBox = oBox, UniqueSkillBox = uBox, Buff = bText, Skill = kText, Origin = oText},
         ModelImage = modelImg,
-        Buttons = { RaceRoll = rBtn, OriginRoll = oBtn },
+        Buttons = { RaceRoll = rBtn, OriginRoll = oBtn, UniqueSkillRoll = uBtn },
         Dialog = { Background = confirmBg, Message = confirmText, Yes = btnYes, No = btnNo }
     }
 end

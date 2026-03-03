@@ -18,12 +18,14 @@ local RequestRollEvent = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("
 -- BIẾN GHI NHỚ ĐỘ HIẾM VÀ LOẠI ĐANG CHỜ ROLL
 local currentRaceRarity = "Common"
 local currentOriginRarity = "Common"
+local currentUniqueSkillRarity = "Common"
 local pendingRoll = nil 
 
 -- Logic khi nhận dữ liệu từ Server
 UpdateStatsEvent.OnClientEvent:Connect(function(data)
     UI.Labels.RaceBox.Text = data.Race
     UI.Labels.OriginBox.Text = data.Origin
+    
     
     UI.Stats.Str.Text = "Strength: " .. (data.Stats.Str or 0)
     UI.Stats.Dex.Text = "Dexterity: " .. (data.Stats.Dex or 0)
@@ -59,6 +61,23 @@ UpdateStatsEvent.OnClientEvent:Connect(function(data)
         UI.Labels.Origin.Text = "Origin: None"
     end
 
+    -- XỬ LÝ UNIQUE SKILL (Đã gộp chung Text và Màu sắc)
+    local skillName = data.UniqueSkill or "None"
+    UI.Labels.UniqueSkillBox.Text = skillName
+    
+    local skillInfo = UIData.UNIQUE_SKILL_INFO[skillName]
+    if skillInfo then
+        currentUniqueSkillRarity = skillInfo.Rarity or "Common"
+        UI.Labels.UniqueSkillBox.TextColor3 = UIData.RARITY_COLORS[currentUniqueSkillRarity] or Color3.fromRGB(255, 255, 255)
+        
+        -- Hiển thị mô tả và Buff lấy từ UIData
+        UI.Labels.UniqueSkillDesc.Text = skillInfo.Desc .. "\n(" .. skillInfo.Buff .. ")"
+    else
+        currentUniqueSkillRarity = "Common"
+        UI.Labels.UniqueSkillBox.TextColor3 = UIData.RARITY_COLORS["Common"]
+        UI.Labels.UniqueSkillDesc.Text = "No Skill"
+    end
+
     UI.ModelImage.Image = UIData.RACE_MODELS[data.Race] or UIData.RACE_MODELS["None"]
 end)
 
@@ -84,6 +103,10 @@ UI.Buttons.OriginRoll.MouseButton1Click:Connect(function()
     handleRollRequest("Origin", currentOriginRarity)
 end)
 
+UI.Buttons.UniqueSkillRoll.MouseButton1Click:Connect(function() 
+    handleRollRequest("UniqueSkill", currentUniqueSkillRarity)
+end)
+
 -- NÚT XỬ LÝ CỦA BẢNG CẢNH BÁO
 UI.Dialog.Yes.MouseButton1Click:Connect(function()
     if pendingRoll then
@@ -97,6 +120,7 @@ UI.Dialog.No.MouseButton1Click:Connect(function()
     pendingRoll = nil -- Hủy lệnh Roll
     UI.Dialog.Background.Visible = false -- Tắt bảng đi
 end)
+
 
 
 -- XỬ LÝ CHUYỂN TAB

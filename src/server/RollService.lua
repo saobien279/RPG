@@ -2,6 +2,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RaceData = require(ReplicatedStorage.Shared.RaceData)
 local OriginData = require(ReplicatedStorage.Shared.OriginData)
+local UniqueSkillData = require(ReplicatedStorage.Shared.UniqueSkillData)
 
 local RollService = {}
 
@@ -43,6 +44,34 @@ function RollService.RollOrigin()
         return list[math.random(1, #list)]
     else
         local list = OriginData.Common.Origins
+        return list[math.random(1, #list)]
+    end
+end
+
+-- Hàm Roll Unique Skill (Mới)
+function RollService.RollUniqueSkill()
+    local roll = math.random(1, 100) -- Gieo xúc xắc từ 1 đến 100
+    
+    -- Tỷ lệ: Legend(3) + Epic(7) + Rare(15) + Uncommon(30) + Common(45) = 100%
+    
+    if roll <= 3 then -- Legendary (3%)
+        local list = UniqueSkillData.Legendary.Skills
+        return list[math.random(1, #list)]
+        
+    elseif roll <= (3 + 7) then -- Epic (Cộng dồn là 10%)
+        local list = UniqueSkillData.Epic.Skills
+        return list[math.random(1, #list)]
+        
+    elseif roll <= (3 + 7 + 15) then -- Rare (Cộng dồn là 25%)
+        local list = UniqueSkillData.Rare.Skills
+        return list[math.random(1, #list)]
+        
+    elseif roll <= (3 + 7 + 15 + 30) then -- Uncommon (Cộng dồn là 55%)
+        local list = UniqueSkillData.Uncommon.Skills
+        return list[math.random(1, #list)]
+        
+    else -- Common (45% còn lại)
+        local list = UniqueSkillData.Common.Skills
         return list[math.random(1, #list)]
     end
 end
