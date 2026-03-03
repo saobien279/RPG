@@ -233,15 +233,11 @@ function UIManager.BuildMainUI(playerGui)
     local oText = createInfoText(Color3.fromRGB(200, 200, 200))
 
     -- [CỘT ROLL]
-    -- [CỘT ROLL - SỬA LẠI ĐỂ CHỨA 3 MỤC]
-    local rollCol = createColumn(0.35) 
-    
-    -- Hàm tạo nhóm nút Roll cho gọn code
-    local function rollGrp(name, yPos)
+    local function rollGrp(name, y)
         local box = Instance.new("TextLabel")
         box.Text = "None"
-        box.Size = UDim2.fromScale(0.7, 0.08) -- Thu nhỏ chiều cao lại chút để nhét vừa 3 cái
-        box.Position = UDim2.fromScale(0.15, yPos)
+        box.Size = UDim2.fromScale(0.7, 0.12)
+        box.Position = UDim2.fromScale(0.15, y)
         box.BackgroundColor3 = Color3.fromRGB(60, 40, 40)
         box.TextColor3 = Color3.fromRGB(255, 255, 255)
         box.TextScaled = true
@@ -249,30 +245,17 @@ function UIManager.BuildMainUI(playerGui)
         
         local btn = Instance.new("TextButton")
         btn.Text = "ROLL"
-        btn.Size = UDim2.fromScale(0.4, 0.07)
-        btn.Position = UDim2.fromScale(0.3, yPos + 0.1)
+        btn.Size = UDim2.fromScale(0.4, 0.1)
+        btn.Position = UDim2.fromScale(0.3, y + 0.15)
         btn.BackgroundColor3 = Color3.fromRGB(80, 50, 50)
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.TextScaled = true
         btn.Parent = rollCol
-        
-        -- Thêm dòng mô tả nhỏ bên dưới mỗi cái
-        local desc = Instance.new("TextLabel")
-        desc.Text = ""
-        desc.Size = UDim2.fromScale(0.9, 0.08)
-        desc.Position = UDim2.fromScale(0.05, yPos + 0.18)
-        desc.BackgroundTransparency = 1
-        desc.TextColor3 = Color3.fromRGB(200, 200, 200)
-        desc.TextScaled = true
-        desc.Parent = rollCol
-
-        return box, btn, desc
+        return box, btn
     end
 
-    -- Tạo 3 cụm Roll: Race, Origin, Unique Skill
-    local rBox, rBtn, rDesc = rollGrp("Race", 0.05)
-    local oBox, oBtn, oDesc = rollGrp("Origin", 0.35)
-    local uBox, uBtn, uDesc = rollGrp("UniqueSkill", 0.65) -- Vị trí mới
+    local rBox, rBtn = rollGrp("Race", 0.1)
+    local oBox, oBtn = rollGrp("Origin", 0.55)
 
     -- =====================================
     -- 5. BẢNG CẢNH BÁO (CONFIRM DIALOG)
@@ -334,20 +317,15 @@ function UIManager.BuildMainUI(playerGui)
      -- Trả về các phần tử liên quan đến Stats
     -- Trả về tất cả các phần tử cần tương tác
     return {
-        HeaderBtns = headerBtns,
-        Tabs = tabs,
-        AreaBtns = areaBtns,
+        HeaderBtns = headerBtns, -- Phải có dòng này
+        Tabs = tabs,             -- Phải có dòng này
+        AreaBtns = areaBtns,    
         Stats = { Str = sStr, Dex = sDex, End = sEnd, Arc = sArc },
-        Labels = { 
-            RaceBox = rBox, OriginBox = oBox, UniqueSkillBox = uBox, -- Thêm uBox
-            RaceDesc = rDesc, OriginDesc = oDesc, UniqueSkillDesc = uDesc, -- Thêm Description Labels
-            Buff = bText, Skill = kText -- (Mấy cái cũ)
-        },
+        Labels = { RaceBox = rBox, OriginBox = oBox, Buff = bText, Skill = kText, Origin = oText },
         ModelImage = modelImg,
-        Buttons = { 
-            RaceRoll = rBtn, OriginRoll = oBtn, UniqueSkillRoll = uBtn -- Thêm nút Roll Skill
-        },
-        Dialog = { Background = confirmBg, Message = confirmText, Yes = btnYes, No = btnNo } 
+        Buttons = { RaceRoll = rBtn, OriginRoll = oBtn },
+        Dialog = { Background = confirmBg, Message = confirmText, Yes = btnYes, No = btnNo }
     }
 end
+
 return UIManager

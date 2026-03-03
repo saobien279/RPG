@@ -4,7 +4,6 @@ local DataTemplate = {
         Exp = 0,
         Race = "None", -- Sẽ Roll sau [cite: 3]
         Origin = "None", -- Sẽ Roll sau [cite: 3]
-        UniqueSkill = "None",
         Stats = {
             Str = 0, -- Sức mạnh vật lý 
             Arc = 0, -- Sát thương phép 
