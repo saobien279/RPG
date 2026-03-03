@@ -101,16 +101,24 @@ end)
 
 -- XỬ LÝ CHUYỂN TAB
 local function switchTab(targetTabName)
-    -- 1. Vòng lặp tắt hết tất cả các Tab và cho các nút tối màu lại
-    for tabName, btn in pairs(UI.HeaderBtns) do
-        UI.Tabs[tabName].Visible = false
-        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45) -- Màu nút đang tắt
+    -- 1. Tắt hiển thị CỦA TẤT CẢ CÁC TAB (Duyệt qua hộp Tabs chứ không phải HeaderBtns nữa)
+    for _, tab in pairs(UI.Tabs) do
+        tab.Visible = false
     end
     
-    -- 2. Chỉ bật cái Tab được chọn lên và làm sáng màu nút đó
-    if UI.Tabs[targetTabName] and UI.HeaderBtns[targetTabName] then
+    -- 2. Đưa tất cả các nút trên Header về màu tối
+    for _, btn in pairs(UI.HeaderBtns) do
+        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    end
+    
+    -- 3. Bật cái Tab được yêu cầu lên (Không cần quan tâm nó có nằm trên Header hay không)
+    if UI.Tabs[targetTabName] then
         UI.Tabs[targetTabName].Visible = true
-        UI.HeaderBtns[targetTabName].BackgroundColor3 = Color3.fromRGB(80, 80, 80) -- Sáng lên báo hiệu đang ở Tab này
+    end
+    
+    -- 4. Nếu Tab đó có nút trên Header (Main, Area, Inventory) thì làm sáng nút đó lên
+    if UI.HeaderBtns[targetTabName] then
+        UI.HeaderBtns[targetTabName].BackgroundColor3 = Color3.fromRGB(80, 80, 80)
     end
 end
 
@@ -121,12 +129,12 @@ for tabName, btn in pairs(UI.HeaderBtns) do
     end)
 end
 
--- 4. Khi vừa vào game, tự động mở Tab "Main"
-switchTab("Main")
-
 for areaName, btn in pairs(UI.AreaBtns) do
     btn.MouseButton1Click:Connect(function()
         -- Khi bấm vào thẻ "Dungeon", gọi hàm switchTab để chuyển qua Tab Dungeon
         switchTab(areaName)
     end)
 end
+
+-- 4. Khi vừa vào game, tự động mở Tab "Main"
+switchTab("Main")
