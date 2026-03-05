@@ -25,12 +25,15 @@ local pendingRoll = nil
 UpdateStatsEvent.OnClientEvent:Connect(function(data)
     UI.Labels.RaceBox.Text = data.Race
     UI.Labels.OriginBox.Text = data.Origin
+    UI.Labels.UniqueSkillBox.Text = data.UniqueSkill or "None"
     
     
     UI.Stats.Str.Text = "Strength: " .. (data.Stats.Str or 0)
     UI.Stats.Dex.Text = "Dexterity: " .. (data.Stats.Dex or 0)
     UI.Stats.End.Text = "Endurance: " .. (data.Stats.End or 0)
     UI.Stats.Arc.Text = "Arcane: " .. (data.Stats.Arc or 0)
+    
+
     
     -- XỬ LÝ RACE (Đã gộp chung Text và Màu sắc)
     local raceInfo = UIData.RACE_INFO[data.Race]
@@ -48,6 +51,8 @@ UpdateStatsEvent.OnClientEvent:Connect(function(data)
         UI.Labels.Skill.Text = "Race Skill: None"
     end
     
+
+
     -- XỬ LÝ ORIGIN (Đã gộp chung Text và Màu sắc)
     local originInfo = UIData.ORIGIN_INFO[data.Origin]
     if originInfo then
@@ -61,11 +66,10 @@ UpdateStatsEvent.OnClientEvent:Connect(function(data)
         UI.Labels.Origin.Text = "Origin: None"
     end
 
+
+
     -- XỬ LÝ UNIQUE SKILL (Đã gộp chung Text và Màu sắc)
-    local skillName = data.UniqueSkill or "None"
-    UI.Labels.UniqueSkillBox.Text = skillName
-    
-    local skillInfo = UIData.UNIQUE_SKILL_INFO[skillName]
+    local skillInfo = UIData.UNIQUE_SKILL_INFO[data.UniqueSkill]
     if skillInfo then
         currentUniqueSkillRarity = skillInfo.Rarity or "Common"
         UI.Labels.UniqueSkillBox.TextColor3 = UIData.RARITY_COLORS[currentUniqueSkillRarity] or Color3.fromRGB(255, 255, 255)
@@ -80,6 +84,10 @@ UpdateStatsEvent.OnClientEvent:Connect(function(data)
 
     UI.ModelImage.Image = UIData.RACE_MODELS[data.Race] or UIData.RACE_MODELS["None"]
 end)
+
+
+
+
 
 -- HÀM KIỂM TRA ĐỘ HIẾM KHI BẤM NÚT ROLL
 local function handleRollRequest(rollType, currentRarity)

@@ -219,7 +219,7 @@ function UIManager.BuildMainUI(playerGui)
 
     local function createInfoText(color)
         local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(0.95, 0, 0.28, 0)
+        lbl.Size = UDim2.new(0.95, 0, 0.20, 0)
         lbl.TextColor3 = color
         lbl.BackgroundTransparency = 1
         lbl.TextScaled = true
@@ -231,6 +231,7 @@ function UIManager.BuildMainUI(playerGui)
     local bText = createInfoText(Color3.fromRGB(200, 200, 200))
     local kText = createInfoText(Color3.fromRGB(150, 255, 150))
     local oText = createInfoText(Color3.fromRGB(200, 200, 200))
+    local uText = createInfoText(Color3.fromRGB(200, 200, 200))
 
     -- [CỘT ROLL]
     local function rollGrp(name, y)
@@ -256,7 +257,7 @@ function UIManager.BuildMainUI(playerGui)
 
     local rBox, rBtn = rollGrp("Race", 0.05)        -- Nằm ở trên cùng (5%)
     local oBox, oBtn = rollGrp("Origin", 0.35)      -- Nằm ở giữa (35%)
-    local uBox, uBtn= rollGrp("UniqueSkill", 0.65) -- Nằm ở dưới (65%) <-- ĐÂY CHÍNH LÀ NÓ
+    local uBox, uBtn = rollGrp("UniqueSkill", 0.65) -- Nằm ở dưới (65%) <-- ĐÂY CHÍNH LÀ NÓ
 
     -- =====================================
     -- 5. BẢNG CẢNH BÁO (CONFIRM DIALOG)
@@ -322,7 +323,7 @@ function UIManager.BuildMainUI(playerGui)
         Tabs = tabs,             -- Phải có dòng này
         AreaBtns = areaBtns,    
         Stats = { Str = sStr, Dex = sDex, End = sEnd, Arc = sArc },
-        Labels = { RaceBox = rBox, OriginBox = oBox, UniqueSkillBox = uBox, Buff = bText, Skill = kText, Origin = oText},
+        Labels = { RaceBox = rBox, OriginBox = oBox, UniqueSkillBox = uBox, Buff = bText, Skill = kText, Origin = oText, UniqueSkillDesc = uText },
         ModelImage = modelImg,
         Buttons = { RaceRoll = rBtn, OriginRoll = oBtn, UniqueSkillRoll = uBtn },
         Dialog = { Background = confirmBg, Message = confirmText, Yes = btnYes, No = btnNo }

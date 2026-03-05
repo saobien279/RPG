@@ -56,6 +56,7 @@ local function OnPlayerAdded(player)
             UpdateStatsEvent:FireClient(player, {
                 Race = profile.Data.Slot1.Race,
                 Origin = profile.Data.Slot1.Origin,
+                UniqueSkill = profile.Data.Slot1.UniqueSkill,
                 Stats = finalStats
             })
         else
@@ -74,6 +75,8 @@ RequestRollEvent.OnServerEvent:Connect(function(player, rollType)
         profile.Data.Slot1.Race = RollService.RollRace()
     elseif rollType == "Origin" then
         profile.Data.Slot1.Origin = RollService.RollOrigin()
+    elseif rollType == "UniqueSkill" then
+        profile.Data.Slot1.UniqueSkill = RollService.RollUniqueSkill()
     end
     
     -- Tính toán lại stats và gửi về cho Client cập nhật UI
@@ -81,6 +84,7 @@ RequestRollEvent.OnServerEvent:Connect(function(player, rollType)
     UpdateStatsEvent:FireClient(player, {
         Race = profile.Data.Slot1.Race,
         Origin = profile.Data.Slot1.Origin,
+        UniqueSkill = profile.Data.Slot1.UniqueSkill,
         Stats = finalStats
     })
 end)
