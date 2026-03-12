@@ -14,10 +14,14 @@ local UI = UIManager.BuildMainUI(playerGui)
 -- Kết nối Server
 local UpdateStatsEvent = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Events"):WaitForChild("UpdateStats")
 local RequestRollEvent = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Events"):WaitForChild("RequestRoll")
+local AddStatEvent = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Events"):WaitForChild("AddStat")
+
 
 -- BIẾN GHI NHỚ ĐỘ HIẾM VÀ LOẠI ĐANG CHỜ ROLL
 local currentRaceRarity = "Common"
 local currentOriginRarity = "Common"
+local currentUniqueSkillRarity = "Common"
+local currentExtraSkillRarity = "Common"
 local currentUniqueSkillRarity = "Common"
 local pendingRoll = nil 
 
@@ -25,7 +29,9 @@ local pendingRoll = nil
 UpdateStatsEvent.OnClientEvent:Connect(function(data)
     UI.Labels.RaceBox.Text = data.Race
     UI.Labels.OriginBox.Text = data.Origin
-    UI.Labels.UniqueSkillBox.Text = data.UniqueSkill or "None"
+
+    UI.Labels.Gold.Text = "Gold: " .. (data.Gold or 0)
+    UI.Labels.Essence.Text = "Essence: " .. (data.Essence or 0)
     
     
     UI.Stats.Str.Text = "Strength: " .. (data.Stats.Str or 0)
@@ -68,23 +74,64 @@ UpdateStatsEvent.OnClientEvent:Connect(function(data)
 
 
 
-    -- XỬ LÝ UNIQUE SKILL (Đã gộp chung Text và Màu sắc)
-    local skillInfo = UIData.UNIQUE_SKILL_INFO[data.UniqueSkill]
-    if skillInfo then
-        currentUniqueSkillRarity = skillInfo.Rarity or "Common"
-        UI.Labels.UniqueSkillBox.TextColor3 = UIData.RARITY_COLORS[currentUniqueSkillRarity] or Color3.fromRGB(255, 255, 255)
+    -- 3. Xử lý Skills (Dùng hàm updateSkill cho gọn, xóa bỏ đoạn code thủ công phía trên)
+    local function updateSkill(name, labels, rarityRef)
+        local info = UIData.SKILL_INFO[name] or UIData.SKILL_INFO["None"]
+        labels.Box.Text = name
+        labels.Box.TextColor3 = UIData.RARITY_COLORS[info.Rarity]
+        labels.Desc.Text = info.Desc .. "\n(" .. info.Buff .. ")"
         
-        -- Hiển thị mô tả và Buff lấy từ UIData
-        UI.Labels.UniqueSkillDesc.Text = skillInfo.Desc .. "\n(" .. skillInfo.Buff .. ")"
-    else
-        currentUniqueSkillRarity = "Common"
-        UI.Labels.UniqueSkillBox.TextColor3 = UIData.RARITY_COLORS["Common"]
-        UI.Labels.UniqueSkillDesc.Text = "No Skill"
+        -- Cập nhật lại biến Rarity toàn cục để handleRollRequest dùng
+        if labels.Box == UI.Labels.ExtraSkillBox then
+            currentExtraSkillRarity = info.Rarity
+        else
+            currentUniqueSkillRarity = info.Rarity
+        end
     end
+
+
+
+    -- Hiển thị số điểm tiềm năng
+    UI.Labels.Points.Text = "Points: " .. (data.Points or 0)
+
+    -- Kiểm tra: Nếu có điểm (> 0) thì hiện nút [+], nếu hết điểm thì ẩn đi
+    local canAdd = (data.Points or 0) > 0
+    UI.Buttons.AddStr.Visible = canAdd
+    UI.Buttons.AddDex.Visible = canAdd
+    UI.Buttons.AddEnd.Visible = canAdd
+    UI.Buttons.AddArc.Visible = canAdd
+
+    
+    --Xử Lí EXP
+    local expRatio = math.min(1, data.Exp / (data.MaxExp or 100))
+    -- Hiệu ứng chạy thanh EXP cho mượt (Tween)
+    local TweenService = game:GetService("TweenService")
+    TweenService:Create(UI.Labels.ExpFill, TweenInfo.new(0.5), {
+        Size = UDim2.fromScale(expRatio, 1)
+    }):Play()
+
+    -- Cập nhật chữ hiển thị
+    UI.Labels.ExpText.Text = string.format("Lv. %d [ %d / %d ]", data.Level, data.Exp, data.MaxExp)
+
+    updateSkill(data.ExtraSkill, {Box = UI.Labels.ExtraSkillBox, Desc = UI.Labels.ExtraSkillDesc})
+    updateSkill(data.UniqueSkill, {Box = UI.Labels.UniqueSkillBox, Desc = UI.Labels.UniqueSkillDesc})
 
     UI.ModelImage.Image = UIData.RACE_MODELS[data.Race] or UIData.RACE_MODELS["None"]
 end)
 
+
+
+--STATS
+    local function connectStatBtn(btn, statName)
+        btn.MouseButton1Click:Connect(function()
+            AddStatEvent:FireServer(statName)
+        end)
+    end
+
+    connectStatBtn(UI.Buttons.AddStr, "Str")
+    connectStatBtn(UI.Buttons.AddDex, "Dex")
+    connectStatBtn(UI.Buttons.AddEnd, "End")
+    connectStatBtn(UI.Buttons.AddArc, "Arc")
 
 
 
@@ -115,6 +162,16 @@ UI.Buttons.UniqueSkillRoll.MouseButton1Click:Connect(function()
     handleRollRequest("UniqueSkill", currentUniqueSkillRarity)
 end)
 
+UI.Buttons.ExtraSkillRoll.MouseButton1Click:Connect(function()
+    handleRollRequest("ExtraSkill", currentExtraSkillRarity)
+end)
+
+
+UI.Buttons.UniqueSkillRoll.MouseButton1Click:Connect(function()
+    handleRollRequest("UniqueSkill", currentUniqueSkillRarity)
+end)
+
+
 -- NÚT XỬ LÝ CỦA BẢNG CẢNH BÁO
 UI.Dialog.Yes.MouseButton1Click:Connect(function()
     if pendingRoll then
@@ -128,7 +185,6 @@ UI.Dialog.No.MouseButton1Click:Connect(function()
     pendingRoll = nil -- Hủy lệnh Roll
     UI.Dialog.Background.Visible = false -- Tắt bảng đi
 end)
-
 
 
 -- XỬ LÝ CHUYỂN TAB

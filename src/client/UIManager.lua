@@ -44,7 +44,39 @@ function UIManager.BuildMainUI(playerGui)
         headerBtns[name] = btn
     end
     -- CHỈ TẠO 3 NÚT: MAIN, AREA, INVENTORY
-    for _, n in {"Main", "Area", "Inventory"} do createHeaderBtn(n) end
+    for _, n in {"Main", "Area", "Skills", "Inventory"} do createHeaderBtn(n) end
+
+    -- 3.1 KHU VỰC HIỂN THỊ TIỀN (Gold và Essence) HEADER
+    local moneyFrame = Instance.new("Frame")
+    moneyFrame.Size = UDim2.fromScale(0.3, 1)
+    moneyFrame.Position = UDim2.fromScale(0.7, 0)
+    moneyFrame.BackgroundTransparency = 1
+    moneyFrame.Parent = header
+
+    local moneyLayout = Instance.new("UIListLayout")
+    moneyLayout.FillDirection = Enum.FillDirection.Horizontal
+    moneyLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    moneyLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    moneyLayout.Padding = UDim.new(0.05, 0)
+    moneyLayout.Parent = moneyFrame
+
+    local function createMoneyLabel(color)
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.fromScale(0.4, 0.6)
+        lbl.TextColor3 = color
+        lbl.BackgroundTransparency = 1
+        lbl.TextScaled = true
+        lbl.Font = Enum.Font.Antique
+        lbl.Parent = moneyFrame
+        return lbl
+    end
+
+    local goldLbl = createMoneyLabel(Color3.fromRGB(255, 215, 0)) -- Màu vàng Gold
+    local essenceLbl = createMoneyLabel(Color3.fromRGB(0, 255, 255)) -- Màu xanh Essence
+
+
+
+
 
     -- =====================================
     -- 4. HỆ THỐNG TAB
@@ -94,7 +126,7 @@ function UIManager.BuildMainUI(playerGui)
     mainTab.Visible = true
 
     -- =====================================
-    -- 4.1 THIẾT KẾ TAB MAIN (Giữ nguyên đồ cũ)
+    -- 4.1 THIẾT KẾ TAB ROLL RACE (Giữ nguyên đồ cũ)
     -- =====================================
     local mainLayout = Instance.new("UIListLayout")
     mainLayout.FillDirection = Enum.FillDirection.Horizontal
@@ -159,21 +191,9 @@ function UIManager.BuildMainUI(playerGui)
     local statsLayout = Instance.new("UIListLayout")
     statsLayout.Padding = UDim.new(0.05, 0)
     statsLayout.Parent = statsContainer
+    statsLayout.SortOrder = Enum.SortOrder.LayoutOrder -- Ép nó sắp xếp theo số thứ tự mình đặt
 
-    local function createStat(name)
-        local lbl = Instance.new("TextLabel")
-        lbl.Text = name .. ": 0"
-        lbl.Size = UDim2.new(1, 0, 0.15, 0)
-        lbl.BackgroundTransparency = 1
-        lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-        lbl.Font = Enum.Font.Antique
-        lbl.TextXAlignment = Enum.TextXAlignment.Left
-        lbl.TextScaled = true
-        lbl.Parent = statsContainer
-        return lbl
-    end
-
-    local function createTitle(name)
+    local function createTitle(name, order)
         local lbl = Instance.new("TextLabel")
         lbl.Text = name 
         lbl.Size = UDim2.new(1, 0, 0.20, 0)
@@ -183,14 +203,60 @@ function UIManager.BuildMainUI(playerGui)
         lbl.TextXAlignment = Enum.TextXAlignment.Center
         lbl.TextScaled = true
         lbl.Parent = statsContainer
+        lbl.LayoutOrder = order
         return lbl
     end
 
-    createTitle("Character Stats")
-    local sStr = createStat("Strength")
-    local sDex = createStat("Dexterity")
-    local sEnd = createStat("Endurance")
-    local sArc = createStat("Arcane")
+
+    local function createStat(name, order)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, 0, 0.12, 0)
+    container.BackgroundTransparency = 1
+    container.LayoutOrder = order
+    container.Parent = statsContainer
+
+    local lbl = Instance.new("TextLabel")
+    lbl.Text = name .. ": 0"
+    lbl.Size = UDim2.fromScale(0.7, 1)
+    lbl.BackgroundTransparency = 1
+    lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    lbl.Font = Enum.Font.Antique
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.TextScaled = true
+    lbl.Parent = container
+
+    local btn = Instance.new("TextButton")
+    btn.Text = "[+]"
+    btn.Size = UDim2.fromScale(0.25, 0.8)
+    btn.Position = UDim2.fromScale(0.75, 0.1)
+    btn.BackgroundColor3 = Color3.fromRGB(50, 80, 50)
+    btn.TextColor3 = Color3.fromRGB(200, 255, 200)
+    btn.TextScaled = true
+    btn.Visible = false -- Mặc định ẩn, chỉ hiện khi có Point
+    btn.Parent = container
+
+    return lbl, btn
+end
+
+    -- Thêm một nhãn hiện số điểm tiềm năng còn dư lên trên đầu
+    local pLabel = Instance.new("TextLabel")
+    pLabel.Text = "Points: 0"
+    pLabel.Size = UDim2.new(1, 0, 0.1, 0)
+    pLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    pLabel.BackgroundTransparency = 1
+    pLabel.TextScaled = true
+    pLabel.Parent = statsContainer
+    pLabel.LayoutOrder = 6
+
+
+    -- 1. TITLE TRÊN CÙNG (Số 1)
+    createTitle("Character Stats", 1)
+
+    -- 2. CÁC STATS Ở GIỮA (Số 2, 3, 4, 5)
+    local sStr, bStr = createStat("Strength", 2)
+    local sDex, bDex = createStat("Dexterity", 3)
+    local sEnd, bEnd = createStat("Endurance", 4)
+    local sArc, bArc = createStat("Arcane", 5)
 
     -- [CỘT RACE]
     local modelImg = Instance.new("ImageLabel")
@@ -219,7 +285,7 @@ function UIManager.BuildMainUI(playerGui)
 
     local function createInfoText(color)
         local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(0.95, 0, 0.20, 0)
+        lbl.Size = UDim2.new(0.95, 0, 0.30, 0)
         lbl.TextColor3 = color
         lbl.BackgroundTransparency = 1
         lbl.TextScaled = true
@@ -231,7 +297,6 @@ function UIManager.BuildMainUI(playerGui)
     local bText = createInfoText(Color3.fromRGB(200, 200, 200))
     local kText = createInfoText(Color3.fromRGB(150, 255, 150))
     local oText = createInfoText(Color3.fromRGB(200, 200, 200))
-    local uText = createInfoText(Color3.fromRGB(200, 200, 200))
 
     -- [CỘT ROLL]
     local function rollGrp(name, y)
@@ -255,9 +320,8 @@ function UIManager.BuildMainUI(playerGui)
         return box, btn
     end
 
-    local rBox, rBtn = rollGrp("Race", 0.05)        -- Nằm ở trên cùng (5%)
-    local oBox, oBtn = rollGrp("Origin", 0.35)      -- Nằm ở giữa (35%)
-    local uBox, uBtn = rollGrp("UniqueSkill", 0.65) -- Nằm ở dưới (65%) <-- ĐÂY CHÍNH LÀ NÓ
+    local rBox, rBtn = rollGrp("Race", 0.15)      
+    local oBox, oBtn = rollGrp("Origin", 0.55)      
 
     -- =====================================
     -- 5. BẢNG CẢNH BÁO (CONFIRM DIALOG)
@@ -315,19 +379,178 @@ function UIManager.BuildMainUI(playerGui)
     btnNo.ZIndex = 12
     btnNo.Parent = confirmBox
 
+
+
+
+
+
+
+
+
+
+
+
+    --SKILLS
+    local skillTab = createTab("Skills")
+
+    -- Layout cho Tab Skills (xếp dọc cho đẹp)
+    local skillLayout = Instance.new("UIListLayout")
+    skillLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    skillLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    skillLayout.Padding = UDim.new(0.05, 0)
+    skillLayout.Parent = skillTab
+
+    -- Hàm tạo khu vực Roll riêng cho Tab Skill (to hơn cho ngầu)
+    local function createSkillRollGroup(name)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.fromScale(0.8, 0.4)
+    container.BackgroundTransparency = 1
+    container.Parent = skillTab
+
+    local title = Instance.new("TextLabel")
+    title.Text = name:upper()
+    title.Size = UDim2.fromScale(1, 0.2)
+    title.BackgroundTransparency = 1
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextScaled = true
+    title.Parent = container
+
+    local box = Instance.new("TextLabel")
+    box.Text = "None"
+    box.Size = UDim2.fromScale(0.7, 0.3)
+    box.Position = UDim2.fromScale(0.15, 0.25)
+    box.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+    box.TextColor3 = Color3.fromRGB(255, 255, 255)
+    box.TextScaled = true
+    box.Parent = container
+
+    local btn = Instance.new("TextButton")
+    btn.Text = "ROLL " .. name:upper()
+    btn.Size = UDim2.fromScale(0.4, 0.2)
+    btn.Position = UDim2.fromScale(0.3, 0.6)
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 80)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextScaled = true
+    btn.Parent = container
+
+    local desc = Instance.new("TextLabel")
+    desc.Text = ""
+    desc.Size = UDim2.fromScale(1, 0.25)
+    desc.Position = UDim2.fromScale(0, 0.85)
+    desc.BackgroundTransparency = 1
+    desc.TextColor3 = Color3.fromRGB(200, 200, 200)
+    desc.TextScaled = true
+    desc.Parent = container
+
+    return box, btn, desc
+end
+
+    local eBox, eBtn, eDesc = createSkillRollGroup("Extra Skill")
+    local uBox, uBtn, uDesc = createSkillRollGroup("Unique Skill")
+
      -- 6. TRẢ VỀ CÁC PHẦN TỬ CẦN THIẾT CHO LOGIC
      -- Trả về các phần tử liên quan đến Stats
     -- Trả về tất cả các phần tử cần tương tác
-    return {
-        HeaderBtns = headerBtns, -- Phải có dòng này
-        Tabs = tabs,             -- Phải có dòng này
-        AreaBtns = areaBtns,    
-        Stats = { Str = sStr, Dex = sDex, End = sEnd, Arc = sArc },
-        Labels = { RaceBox = rBox, OriginBox = oBox, UniqueSkillBox = uBox, Buff = bText, Skill = kText, Origin = oText, UniqueSkillDesc = uText },
-        ModelImage = modelImg,
-        Buttons = { RaceRoll = rBtn, OriginRoll = oBtn, UniqueSkillRoll = uBtn },
-        Dialog = { Background = confirmBg, Message = confirmText, Yes = btnYes, No = btnNo }
-    }
-end
+--     return {
+--         HeaderBtns = headerBtns, -- Phải có dòng này
+--         Tabs = tabs,             -- Phải có dòng này
+--         AreaBtns = areaBtns,    
+--         Stats = { Str = sStr, Dex = sDex, End = sEnd, Arc = sArc },
+--         Labels = { RaceBox = rBox, OriginBox = oBox, UniqueSkillBox = uBox, Buff = bText, Skill = kText, Origin = oText, UniqueSkillDesc = uText },
+--         ModelImage = modelImg,
+--         Buttons = { RaceRoll = rBtn, OriginRoll = oBtn, UniqueSkillRoll = uBtn },
+--         Dialog = { Background = confirmBg, Message = confirmText, Yes = btnYes, No = btnNo }
+--     }
+-- end
 
+
+
+--EXP BAR
+local expBack = Instance.new("Frame")
+expBack.Name = "EXPBar"
+expBack.Size = UDim2.fromScale(0.4, 0.02) -- Độ mỏng của thanh
+expBack.Position = UDim2.fromScale(0.5, 0.98) -- Nằm sát đáy màn hình
+expBack.AnchorPoint = Vector2.new(0.5, 0.5)
+expBack.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+expBack.BorderSizePixel = 0
+expBack.Parent = background
+
+local expFill = Instance.new("Frame")
+expFill.Name = "Fill"
+expFill.Size = UDim2.fromScale(0, 1) -- Bắt đầu bằng 0
+expFill.BackgroundColor3 = Color3.fromRGB(0, 200, 255) -- Màu xanh ma tố
+expFill.BorderSizePixel = 0
+expFill.Parent = expBack
+
+local expLabel = Instance.new("TextLabel")
+expLabel.Size = UDim2.fromScale(1, 1)
+expLabel.BackgroundTransparency = 1
+expLabel.Text = "Lv. 1 [ 0 / 100 ]"
+expLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+expLabel.TextScaled = true
+expLabel.Font = Enum.Font.Code
+expLabel.Parent = expBack
+
+
+    return {
+            HeaderBtns = headerBtns,
+            Tabs = tabs,
+            AreaBtns = areaBtns,
+            
+            -- Các chỉ số chiến đấu thực tế (Atk, HP, Crit...) - Để hiện ở chỗ khác nếu cần
+            Stats = { 
+                Str = sStr, 
+                Dex = sDex, 
+                End = sEnd, 
+                Arc = sArc 
+            },
+
+            Labels = { 
+                -- Các nhãn chính
+                RaceBox = rBox, 
+                OriginBox = oBox, 
+                Buff = bText, 
+                Skill = kText, 
+                Origin = oText,
+                
+                -- Nhãn điểm tiềm năng
+                Points = pLabel, -- <--- PHẢI CÓ để hiện "Points: 5"
+
+                -- Nhãn Skill (Tab Skills)
+                ExtraSkillBox = eBox,
+                ExtraSkillDesc = eDesc,
+                UniqueSkillBox = uBox,
+                UniqueSkillDesc = uDesc,
+
+                -- Tiền tệ và EXP
+                Gold = goldLbl,
+                Essence = essenceLbl,
+                ExpFill = expFill,
+                ExpText = expLabel
+            },
+
+            Buttons = { 
+                -- Nút Roll
+                RaceRoll = rBtn, 
+                OriginRoll = oBtn,
+                ExtraSkillRoll = eBtn,
+                UniqueSkillRoll = uBtn,
+
+                -- Nút cộng điểm [+] (Để init.client.lua kết nối Click)
+                AddStr = bStr, -- <--- Đưa nút bStr vào đây
+                AddDex = bDex, 
+                AddEnd = bEnd, 
+                AddArc = bArc 
+            },
+
+            Dialog = { 
+                Background = confirmBg, 
+                Message = confirmText, 
+                Yes = btnYes, 
+                No = btnNo 
+            },
+            
+            ModelImage = modelImg
+        }
+    end
 return UIManager
